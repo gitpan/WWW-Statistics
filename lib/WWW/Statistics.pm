@@ -20,7 +20,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.90';
+our $VERSION = '0.91';
 
 ###------------>> Private methods :
 my $ls = sub{
@@ -290,7 +290,7 @@ sub generateGDGraph
 EOF
 		return $HTML;
 	}
-	return 1;
+	return $png;
 }
 sub reIndexBackupTable
 {
@@ -961,8 +961,49 @@ WWW::Statistics - Perl extension for genarate and manage web site statistics
 
 =head1 SYNOPSIS
 
-  use WWW::Statistics;
-  blah blah blah
+	use WWW::Statistics;
+	my $wso = WWW::Statistics->new(
+		DB_USER => 'test' ,
+		DB_PASSWORD => 'toto',
+		DB_HOST => '192.168.0.20',
+		DB_DATABASE => 'test_stat'
+	) or die "[ ERROR ]\n";
+	$wso->setMSTN('test_script');
+	$wso->setBACKUP_TABLE_NAME('backup_script');
+	$wso->initDataBase(
+		MAIN_STAT_TABLE_NAME => test_script,
+		PAGES_LIST => 'first,seconde,third'
+	) or die "[ ERROR ]\n";
+	$wso->addMainPages(PAGES_LIST => 'test') or die "[ ERROR ]\n";
+	print "[ OK ]\n";
+	$id = $wso->getIDfromPage('test');
+	print "[+] id page 'test' (according to getIDfromPage)\t $id\n";
+	$wso->initBackupDatabase or die "[ ERROR ]\n";
+	$wso->dropMainPages(ID_LIST=>$id) or die "[ ERROR ]\n";
+	$wso->updateBackupDBschema or die "[ ERROR ]\n";
+	my $id = $wso->backupStats(
+		BACKUP_DESCRIPTION => 'This is a test of WWW::Statistics'
+	);
+	my $html = $wso->generateHTMLMainGraph(
+		IMAGES_DIR => '/home/arnaud/images/',
+		TABLE_NAME_FONT => "<font color='#3366CC'>",
+		TABLE_TAG => "<table cellspacing='1' cellpadding='5' width='250' border='0' bgcolor='#000000'>",
+		TR_TAG => "<tr bgcolor='#EEEEEE'>"
+	);
+	Write('gen.html',"$html\n"); ## The Write function is from File::Reader
+	$g = $wso->generateGDGraph(
+		GRAPH_WIDTH => 800,
+		WITH_HTML => 1
+	); ## Generate a graph and return the HTML source code wich included him, else this metod return the name of the image.
+	my $back = $wso->generateHTMLBackupGraph(
+		IMAGES_DIR => '/home/1024/INSEP/soutien/images',
+		BACKUP_ID => 5,
+		IMAGES_CYCLING => 1,
+		TABLE_NAME_FONT => "<font color='#3366CC'>",
+		TABLE_TAG => "<table cellspacing='1' cellpadding='5' width='250' border='0' bgcolor='#000000'>",
+		TR_TAG => "<tr bgcolor='#EEEEEE'>"
+	);
+	$wso->reIndexBackupTable;
 
 =head1 DESCRIPTION
 
@@ -990,19 +1031,19 @@ None by default.
 	
 	IMAGES_DIR : the directory where we can found images for using in HTML graph generation. (optionnal)
 	
-Moreover, you can pass all arguments wich are definable by followings accessors.
+Moreover, you can pass all arguments wich are definable by followings accessors. It returned a WWW::Statistics object reference
 
 =item * setMSTN(VALUE) :
 
- accessor for setting MAIN_STAT_TABLE_NAME
+ accessor for setting MAIN_STAT_TABLE_NAME. It returned 1 or undef.
 
 =item * getMSTN :
 
- accessor for getting value of MAIN_STAT_TABLE_NAME
+ accessor for getting value of MAIN_STAT_TABLE_NAME.
 
 =item * setBACKUP_TABLE_NAME(VALUE) :
 
- accessor for setting BACKUP_TABLE_NAME
+ accessor for setting BACKUP_TABLE_NAME. It returned 1 or undef.
 
 =item * getBACKUP_TABLE_NAME :
 
@@ -1010,7 +1051,7 @@ Moreover, you can pass all arguments wich are definable by followings accessors.
 
 =item * setBACKUP_DESCRIPTION(VALUE) :
 
- accessor for setting BACKUP_DESCRIPTION
+ accessor for setting BACKUP_DESCRIPTION. It returned 1 or undef.
 
 =item * getBACKUP_DESCRIPTION :
 
@@ -1018,7 +1059,7 @@ Moreover, you can pass all arguments wich are definable by followings accessors.
 
 =item * setIMAGES_DIR(VALUE) :
 
- accessor for setting IMAGES_DIR
+ accessor for setting IMAGES_DIR. It returned 1 or undef.
 
 =item * getIMAGES_DIR :
 
@@ -1026,11 +1067,11 @@ Moreover, you can pass all arguments wich are definable by followings accessors.
 
 =item * addMainPages :
 
- Add a page to the main stats table (MAIN_STAT_TABLE_NAME)
+ Add a page to the main stats table (MAIN_STAT_TABLE_NAME). Returned undef if faile, else 1.
 
 =item * dropMainPages :
 
- drop a page to the main stats table (MAIN_STAT_TABLE_NAME)
+ drop a page to the main stats table (MAIN_STAT_TABLE_NAME). Returned undef if faile, else 1.
 
 =item * getIDfromPage(PAGE_NAME) :
 
@@ -1042,27 +1083,27 @@ Moreover, you can pass all arguments wich are definable by followings accessors.
  
 	PAGES_LIST : a list of pages you want to manage statistics for. Pass arguments as string (ex: 'index.pl,news.pl,pub.html'). Separator is the coma (',').
 	
-	If you don't have set it before : MAIN_STAT_TABLE_NAME the main statistics table (where are record current stats).
+	If you don't have set it before : MAIN_STAT_TABLE_NAME the main statistics table (where are record current stats). Returned undef if faile, else 1.
 
 =item * initBackupDatabase :
 
- create the backup database
+ create the backup database. Returned undef if faile, else 1.
 
 =item * decrMainPage(ID_PAGE) :
 
- decrement the page identified by ID_PAGE
+ decrement the page identified by ID_PAGE. Returned undef if faile, else 1.
 
 =item * incrMainPage(ID_PAGE) :
 
- increment the page identified by ID_PAGE
+ increment the page identified by ID_PAGE. Returned undef if faile, else 1.
 
 =item * updateBackupDBschema :
 
- update the backup table's schema from the main table one.
+ update the backup table's schema from the main table one. Returned undef if faile, else 1.
 
 =item * backupStats :
 
- backup statistics.
+ backup statistics. Returned undef if faile, else 1.
 
 =item * generateHTMLBackupGraph :
 
@@ -1105,14 +1146,14 @@ Moreover, you can pass all arguments wich are definable by followings accessors.
 	PIXELS_FOR_POINT : specify the number of pixels you want for a point in statistics. Default is 4 pixels. For example, if you have 10 hits on a page, the image wich represent this value may have 40 pixels long.
 
 WARNING : all *_TAG options accept a string as HTML tag but ONLY THE OPENNING ONE !! Tags are closed by the module. Moreover, they all are optionnals.
-	
+
 =item * generateGDGraph :
 
- use the GD module to generate a graph (freshmeat like) of the statistics from the backup table.
+ use the GD module to generate a graph (freshmeat like) of the statistics from the backup table. Returned the name of image generate (wich is stored in IMAGES_DIR)
 
 =item * reIndexBackupTable :
 
- re-index the id_backup column of BACKUP_TABLE_NAME.
+ re-index the id_backup column of BACKUP_TABLE_NAME. Returned undef if faile, else 1.
 
 =item * getMaxFromBackup :
 
@@ -1121,6 +1162,10 @@ WARNING : all *_TAG options accept a string as HTML tag but ONLY THE OPENNING ON
 =head2 Heritage
 
 WWW::Statistics heritate from DB::DBinterface so read this module manpage to having a description of his own methods and functions.
+
+=head2 Returned values
+
+Alle methods returned undef if there is a problem.
 
 =head1 SEE ALSO
 
