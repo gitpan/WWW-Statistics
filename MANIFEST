@@ -1,0 +1,7 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/WWW-Statistics.t
+lib/WWW/Statistics.pm
+META.yml                                 Module meta-data (added by MakeMaker)

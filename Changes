@@ -1,0 +1,6 @@
+Revision history for Perl extension WWW::Statistics.
+
+0.01  Mon May 10 22:49:05 2004
+	- original version; created by h2xs 1.23 with options
+		-A -X -n WWW::Statistics -b 5.6.1
+

@@ -1,0 +1,12 @@
+# http://module-build.sourceforge.net/META-spec.html
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         WWW-Statistics
+version:      0.90
+version_from: lib/WWW/Statistics.pm
+installdirs:  site
+requires:
+    DB::DBinterface:               0.95
+    GD:                            2.12
+
+distribution_type: module
+generated_by: ExtUtils::MakeMaker version 6.17
