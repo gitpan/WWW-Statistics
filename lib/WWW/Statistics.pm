@@ -20,7 +20,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.91';
+our $VERSION = '0.92';
 
 ###------------>> Private methods :
 my $ls = sub{

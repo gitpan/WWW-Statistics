@@ -7,3 +7,6 @@ Revision history for Perl extension WWW::Statistics.
 0.91 12/05/2004 00:16
 	- Updating the doc.
 	- Adding a test interface
+
+0.92 12/50/2004 17:37
+	- Fix some bugs in test interface.

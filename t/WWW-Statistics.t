@@ -49,12 +49,35 @@ sub Read
 # Insert your test code below, the Test::More module is use()ed here so read
 # its man page ( perldoc Test::More ) for help writing this test script.
 
-my ($dbhost,$dbuser,$dbpwd,$db,$dbi) = Read('param_temp.db');
-chomp $dbhost;
-chomp $dbuser;
-chomp $dbpwd;
-chomp $db;
-chomp $dbi;
+my ($dbhost,$dbuser,$dbpwd,$db,$dbi) = undef;
+if(-e 'param_temp.db')
+{
+	($dbhost,$dbuser,$dbpwd,$db,$dbi) = Read('param_temp.db');
+	chomp $dbhost;
+	chomp $dbuser;
+	chomp $dbpwd;
+	chomp $db;
+	chomp $dbi;
+}
+else
+{
+	prin("\n\nYou must have create, update, alter and select rights on the database !\n\n");
+	prin("Please fill the following informations :\nDATABASE HOST : ");
+	$dbhost = <STDIN>;
+	chomp $dbhost;
+	prin("DATABASE USER : ");
+	$dbuser = <STDIN>;
+	chomp $dbuser;
+	prin("DATABASE PASSWORD : ");
+	$dbpwd = <STDIN>;
+	chomp $dbpwd;
+	prin("DATABASE NAME : ");
+	$db = <STDIN>;
+	chomp $db;
+	prin("DATABASE DBI DRIVER : ");
+	$dbi = <STDIN>;
+	chomp $dbi;
+}
 my $wso = WWW::Statistics->new(
 	DB_USER => $dbuser ,
 	DB_PASSWORD => $dbpwd,
